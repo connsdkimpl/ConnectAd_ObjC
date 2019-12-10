@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
 
  s.ios.deployment_target = '8.0'
 
- s.source_files = 'ConnectAd_ObjC/**/*.{h,m,png}'
+ s.source_files = 'ConnectAd_ObjC/**/*.{h,m}'
  s.exclude_files = 'ConnectAd_ObjC/**/*.plist'
  s.resource_bundles = {
    'ConnectAd_ObjC' => ['ConnectAd_ObjC/Assets/*.png']

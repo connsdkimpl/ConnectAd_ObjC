@@ -67,7 +67,7 @@ self.connectAdBanner.adMobConnectIds = [[NSMutableArray alloc]initWithObjects:@"
 self.connectAdBanner.moPubConnectIds = [[NSMutableArray alloc]initWithObjects:@"MOPUB_BANNER_CONNECT_ID_1",@"MOPUB_BANNER_CONNECT_ID_2", nil];
 self.connectAdBanner.rootViewController = self;
 self.connectAdBanner.delegate = self;
-[self.view addSubview:connectAdBanner];
+[self.view addSubview:self.connectAdBanner];
 ```
 Whenever you need to present your banner, call *loadAds* of your *ConnectAdBanner* to load and display the ad:
 ```
