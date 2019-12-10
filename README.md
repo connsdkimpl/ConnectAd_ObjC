@@ -1,9 +1,5 @@
 # ConnectAd SDK for iOS (Objective-C)
 
-## Requirements
-
-1. XCode 10 - (XCode 11 support is under development)
-
 ## Setup
 ### Setup with CocoaPods
 [CocoaPods](https://cocoapods.org/) is a dependency manager for Swift and Objective-C Cocoa projects, which automates and simplifies the process of using 3rd-party libraries like the Connect AD SDK in your projects. You can install it with the following command:
