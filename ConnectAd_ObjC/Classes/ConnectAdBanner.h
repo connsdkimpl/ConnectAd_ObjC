@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong,nonatomic)NSMutableArray *adMobConnectIds;
 @property(strong,nonatomic)NSMutableArray *moPubConnectIds;
 
+- (id)initWithAdPosition:(int)position parentView:(UIView*)parentView;
+
 @end
 
 NS_ASSUME_NONNULL_END

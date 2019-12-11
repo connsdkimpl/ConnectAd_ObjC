@@ -12,6 +12,76 @@
     return self;
 }
 
+- (id)initWithAdPosition:(int)position parentView:(UIView*)parentView {
+  //instantiate default banner size
+  self = [[ConnectAdBanner alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+  [self positionView:self inParentView:parentView adPosition:position];
+  return self;
+}
+
+static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
+    NSProcessInfo *processInfo = NSProcessInfo.processInfo;
+    if ([processInfo respondsToSelector:@selector(isOperatingSystemAtLeastVersion:)]) {
+        NSOperatingSystemVersion version = {majorVersion};
+        return [processInfo isOperatingSystemAtLeastVersion:version];
+    } else {
+        return majorVersion >= 7;
+    }
+}
+
+- (void)positionView:(UIView *)view inParentView:(UIView *)parentView adPosition:(int)adPosition {
+    CGRect parentBounds = parentView.bounds;
+    if (IsOperatingSystemAtLeastVersion(11)) {
+        CGRect safeAreaFrame = parentView.safeAreaLayoutGuide.layoutFrame;
+        if (!CGSizeEqualToSize(CGSizeZero, safeAreaFrame.size)) {
+            parentBounds = safeAreaFrame;
+        }
+    }
+    CGFloat top = CGRectGetMinY(parentBounds) + CGRectGetMidY(view.bounds);
+    CGFloat left = CGRectGetMinX(parentBounds) + CGRectGetMidX(view.bounds);
+
+    CGFloat bottom = CGRectGetMaxY(parentBounds) - CGRectGetMidY(view.bounds);
+    CGFloat right = CGRectGetMaxX(parentBounds) - CGRectGetMidX(view.bounds);
+    CGFloat centerX = CGRectGetMidX(parentBounds);
+    CGFloat centerY = CGRectGetMidY(parentBounds);
+
+    if (CGRectGetWidth(view.bounds) >= CGRectGetWidth(parentView.bounds)) {
+      left = CGRectGetMidX(parentView.bounds);
+    }
+
+    if (CGRectGetHeight(view.bounds) >= CGRectGetHeight(parentView.bounds)) {
+      top = CGRectGetMidY(parentView.bounds);
+    }
+
+    CGPoint center = CGPointMake(centerX, top);
+    switch (adPosition) {
+        case 0:
+          center = CGPointMake(centerX, top);
+          break;
+        case 1:
+          center = CGPointMake(centerX, bottom);
+          break;
+        case 2:
+          center = CGPointMake(left, top);
+          break;
+        case 3:
+          center = CGPointMake(right, top);
+          break;
+        case 4:
+          center = CGPointMake(left, bottom);
+          break;
+        case 5:
+          center = CGPointMake(right, bottom);
+          break;
+        case 6:
+          center = CGPointMake(centerX, centerY);
+          break;
+        default:
+          break;
+    }
+    view.center = center;
+}
+
 - (id)initWithCoder:(NSCoder *)decoder{
     if(self = [super initWithCoder:decoder]) {
     }
@@ -238,8 +308,8 @@ didFailToReceiveAdWithError:(nonnull GADRequestError *)error{
     NSLog(@"Sent when the user has tapped on the banner.");
     NSLog(@"adViewWillLeaveApplication");
     [self.delegate onBannerClicked:self.adType];
-
 }
+
 //MAP
 - (UIViewController *)viewControllerForPresentingModalView {
     return self.rootViewController;
