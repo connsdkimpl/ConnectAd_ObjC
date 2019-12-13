@@ -251,7 +251,6 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
 
 //Delegate - GAD
 - (void)adViewDidReceiveAd:(nonnull GADBannerView *)bannerView{
-    NSLog(@"adViewDidReceiveAd");
     bannerView.alpha = 0;
     [UIView animateWithDuration:1 animations:^{
         bannerView.alpha = 1;
@@ -261,7 +260,6 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
 
 - (void)adView:(nonnull GADBannerView *)bannerView
 didFailToReceiveAdWithError:(nonnull GADRequestError *)error{
-    NSLog(@"adView:didFailToReceiveAdWithError: %@",[error localizedDescription]);
     [self removeBannerView:self.adMobBannerView];
     self.adMobBannerView = [[GADBannerView alloc]init];
     self.adMobBannerView .hidden = YES;
@@ -285,28 +283,18 @@ didFailToReceiveAdWithError:(nonnull GADRequestError *)error{
 }
 
 - (void)adViewWillPresentScreen:(nonnull GADBannerView *)bannerView {
-    NSLog(@"adViewWillPresentScreen");
     [self.delegate onBannerExpanded:self.adType];
     [self.delegate onBannerClicked:self.adType];
 
 }
 
-//- (void)adViewWillDismissScreen:(nonnull GADBannerView *)bannerView {
-//  NSLog(@"adViewWillDismissScreen");
-//  [self.delegate connectedAdViewWillDismissScreen:self.adType];
-//
-//}
-
 - (void)adViewDidDismissScreen:(nonnull GADBannerView *)bannerView{
-    NSLog(@"adViewDidDismissScreen");
     [self.delegate onBannerCollapsed:self.adType];
 
 }
 
 //onclick of banner - Admob
 - (void)adViewWillLeaveApplication:(nonnull GADBannerView *)bannerView{
-    NSLog(@"Sent when the user has tapped on the banner.");
-    NSLog(@"adViewWillLeaveApplication");
     [self.delegate onBannerClicked:self.adType];
 }
 
@@ -315,12 +303,10 @@ didFailToReceiveAdWithError:(nonnull GADRequestError *)error{
     return self.rootViewController;
 }
 - (void)adViewDidLoadAd:(MPAdView *)view adSize:(CGSize)adSize{
-    NSLog(@"adViewDidLoadAd");
     [self.delegate onBannerDone:self.adType];
 }
 
 - (void)adView:(MPAdView *)view didFailToLoadAdWithError:(NSError *)error{
-    NSLog(@"adViewDidFail %@",[error localizedDescription]);
     [self.delegate onBannerFailed:self.adType withError:error];
     [view stopAutomaticallyRefreshingContents];
     [self removeBannerView:self.moPubBannerView];
@@ -343,12 +329,10 @@ didFailToReceiveAdWithError:(nonnull GADRequestError *)error{
 }
 
 - (void)willPresentModalViewForAd:(MPAdView *)view{
-    NSLog(@"willPresentModalView");
     [self.delegate onBannerClicked:self.adType];
 }
 
 - (void)willLeaveApplicationFromAd:(MPAdView *)view{
-    NSLog(@"willLeaveApplication");
     [self.delegate onBannerClicked:self.adType];
 }
 

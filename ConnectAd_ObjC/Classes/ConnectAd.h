@@ -45,8 +45,7 @@ typedef enum: int {
 -(void)onRewardVideoClosed:(AdType)adType;
 -(void)onRewardFail:(AdType)adType withError:(NSError*_Nullable)error;
 -(void)onRewardVideoStarted:(AdType)adType;
--(void)onRewardedVideoCompleted:(AdType)adType;
--(void)onRewarded:(AdType)adType withReward:(AdReward*_Nullable) rewardItem;
+-(void)onRewardedVideoCompleted:(AdType)adType withReward:(AdReward*_Nullable) rewardItem;
 -(void)onRewardVideoClicked:(AdType)adType;
 
 @end

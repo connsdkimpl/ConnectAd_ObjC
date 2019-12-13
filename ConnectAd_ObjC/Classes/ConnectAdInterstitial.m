@@ -1,10 +1,4 @@
-//
 //  ConnectAdInterstitial.m
-//  Connect
-//
-//  Created by Firoze Moosakutty on 13/08/19.
-//  Copyright © 2019 Rukmini KR. All rights reserved.
-//
 
 #import "ConnectAdInterstitial.h"
 
@@ -139,7 +133,6 @@
                     [self.delegate onInterstitialFailed:self.adType withError:parseError];
                 }
             } else {
-                NSLog(@"Error");
                 [self.delegate onInterstitialFailed:self.adType withError:error];
             }
         }];
@@ -155,14 +148,12 @@
 
 #pragma mark: Admob
 - (void)interstitialDidReceiveAd:(GADInterstitial *)ad{
-    NSLog(@"interstitialDidReceiveAdAdmob");
     if ([self.adMobInterstitial isReady]) {
         [self.adMobInterstitial presentFromRootViewController:_rootViewController];
     }
 }
 
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
-    NSLog(@"interstitial:didFailToReceiveAdWithError: \(error.localizedDescription)");
     [self.delegate onInterstitialFailed:self.adType withError:error];
     if([self.adMobConnectIds count] != 0) {
         [self.adMobConnectIds removeObjectAtIndex:0];
@@ -183,38 +174,29 @@
 }
 
 - (void)interstitialWillPresentScreen:(GADInterstitial *)ad{
-    NSLog(@"interstitialWillPresentScreen");
     [self.delegate onInterstitialDone:self.adType];
 }
 
 - (void)interstitialDidDismissScreen:(GADInterstitial *)ad{
-    NSLog(@"interstitialDidDismissScreen");
     [self.delegate onInterstitialClosed:self.adType];
 }
 
 - (void)interstitialWillLeaveApplication:(GADInterstitial *)ad{
-    NSLog(@"interstitialWillLeaveApplication");
     [self.delegate onInterstitialClicked:self.adType];
 
 }
 
-- (void)interstitialDidFailToPresentScreen:(GADInterstitial *)ad{
-    NSLog(@"interstitialDidFailToPresentScreen");
 
-}
 
 #pragma mark: Mopub
 - (void)interstitialDidLoadAd:(MPInterstitialAdController *)interstitial{
-    NSLog(@"interstitialDidReceiveAd");
     if ([self.moPubInterstitial ready]) {
         [self.moPubInterstitial showFromViewController:self.rootViewController];
     }
 }
 
 - (void)interstitialDidFailToLoadAd:(MPInterstitialAdController *)interstitial{
-    NSLog(@"interstitial:didFailToReceiveAdWithError");
     NSError *error = [NSError errorWithDomain:@"Error" code:201 userInfo:@{NSLocalizedDescriptionKey:@"Issue unknown.."}];
-    NSLog(@"Error: %@", error.localizedDescription);
     [self.delegate onInterstitialFailed:self.adType withError:error];
     [MPInterstitialAdController removeSharedInterstitialAdController:interstitial];
     if([self.moPubConnectIds count] != 0) {
@@ -237,7 +219,6 @@
 
 - (void)interstitialDidFailToLoadAd:(MPInterstitialAdController *)interstitial
                           withError:(NSError *)error{
-    NSLog(@"interstitial:didFailToReceiveAdWithError: %@", error.localizedDescription);
     [self.delegate onInterstitialFailed:self.adType withError:error];
     [MPInterstitialAdController removeSharedInterstitialAdController:interstitial];
     if ([self.moPubConnectIds count] != 0) {
@@ -259,18 +240,15 @@
 }
 
 - (void)interstitialDidAppear:(MPInterstitialAdController *)interstitial{
-    NSLog(@"interstitialDidAppear");
     [self.delegate onInterstitialDone:self.adType];
 
 }
 
 - (void)interstitialDidDisappear:(MPInterstitialAdController *)interstitial{
-    NSLog(@"interstitialDidDisappear");
     [self.delegate onInterstitialClosed:self.adType];
 }
 
 -(void)interstitialDidReceiveTapEvent:(MPInterstitialAdController *)interstitial{
-    NSLog(@"interstitialDidReceiveTapEvent");
     [self.delegate onInterstitialClicked:self.adType];
 }
 

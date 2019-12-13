@@ -1,10 +1,4 @@
-//
 //  ConnectAdRewarded.h
-//  Connect
-//
-//  Created by Rukmini KR on 07/08/19.
-//  Copyright © 2019 Rukmini KR. All rights reserved.
-//
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>

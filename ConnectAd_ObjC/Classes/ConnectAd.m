@@ -4,7 +4,6 @@
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #import "MoPub.h"
 @implementation ConnectAd
-//@synthesize delegate;
 
 NSString * const AdKeyToString[] = {
     [admob] = @"admob",
