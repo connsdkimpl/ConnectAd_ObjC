@@ -142,7 +142,8 @@
 
 -(void)showConnectInterstitial:(NSString*)htmlString {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.rootViewController presentViewController: [ConnectInterstitialView createInstance:htmlString withDelegate:self.delegate] animated:true completion:nil];
+       NSString *replacedHtmlString = [htmlString stringByReplacingOccurrencesOfString:@"'//" withString:@"'https://"];
+        [self.rootViewController presentViewController: [ConnectInterstitialView createInstance:replacedHtmlString withDelegate:self.delegate] animated:true completion:nil];
     });
 }
 

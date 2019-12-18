@@ -235,9 +235,10 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
 }
 -(void)showConnectBanner:(NSString *)htmlString {
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *replacedHtmlString = [htmlString stringByReplacingOccurrencesOfString:@"'//" withString:@"'https://"];
         self.connectBannerView = [[ConnectBannerView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         self.connectBannerView.delegate = self.delegate;
-        [self.connectBannerView load:htmlString];
+        [self.connectBannerView load:replacedHtmlString];
         [self addBannerView:self.connectBannerView];
     });
 }
@@ -310,7 +311,7 @@ didFailToReceiveAdWithError:(nonnull GADRequestError *)error{
     [self.delegate onBannerFailed:self.adType withError:error];
     [view stopAutomaticallyRefreshingContents];
     [self removeBannerView:self.moPubBannerView];
-    if([self.adMobConnectIds count] != 0) {
+    if([self.moPubConnectIds count] != 0) {
         [self.moPubConnectIds removeObjectAtIndex:0];
         if ([self.moPubConnectIds count] != 0) {
             [self setMoPubBanner];

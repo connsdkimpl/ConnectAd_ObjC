@@ -148,6 +148,10 @@
     }
 }
 
+-(void)rewardBasedVideoAdWillLeaveApplication:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+    [self.delegate onRewardVideoClicked:self.adType];
+}
+
 #pragma mark: Mopub
 
 - (void)rewardedVideoAdDidLoadForAdUnitID:(NSString *)adUnitID {
