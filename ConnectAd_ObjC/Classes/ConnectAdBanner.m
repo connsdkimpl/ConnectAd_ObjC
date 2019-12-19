@@ -169,7 +169,6 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
         }
     }
     GADRequest *request = [GADRequest request];
-    GADMobileAds.sharedInstance.requestConfiguration.testDeviceIdentifiers =  @[ @"eaf8e70bb9a7864dd6151678d225a768"];
     self.adMobBannerView.adUnitID = bannerAdUnitId;
     self.adMobBannerView.delegate = self;
     self.adMobBannerView.rootViewController = self.rootViewController;
