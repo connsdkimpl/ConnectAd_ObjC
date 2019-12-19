@@ -47,6 +47,7 @@ typedef enum: int {
 -(void)onRewardVideoStarted:(AdType)adType;
 -(void)onRewardedVideoCompleted:(AdType)adType withReward:(AdReward*_Nullable) rewardItem;
 -(void)onRewardVideoClicked:(AdType)adType;
+-(void)onRewardNotFound;
 
 @end
 
