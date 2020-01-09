@@ -225,30 +225,32 @@ BOOL initializationStatus;
                                         adMobAppUnitId = appUnitId;
                                     }
                                     if (![adMobAppUnitId isEqualToString:@""]) {
-                                        [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
-                                            for (int i = 0; i<status.adapterStatusesByClassName.allValues.count; i++) {
-                                                GADAdapterStatus *gadAdapterStatus = [status.adapterStatusesByClassName.allValues objectAtIndex:i];
-                                                if(gadAdapterStatus.state == GADAdapterInitializationStateReady){
-                                                    NSLog(@"ADMOB Initialisation success!");
-                                                    initializationStatus = true;
-                                                    [admobResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
-                                                    [admobResponse setValue:@"Admob initialization success" forKey:@"message"];
+                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                            [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
+                                                for (int i = 0; i<status.adapterStatusesByClassName.allValues.count; i++) {
+                                                    GADAdapterStatus *gadAdapterStatus = [status.adapterStatusesByClassName.allValues objectAtIndex:i];
+                                                    if(gadAdapterStatus.state == GADAdapterInitializationStateReady){
+                                                        NSLog(@"ADMOB Initialisation success!");
+                                                        initializationStatus = true;
+                                                        [admobResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
+                                                        [admobResponse setValue:@"Admob initialization success" forKey:@"message"];
+                                                        [mopubResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
+                                                        [mopubResponse setValue:@"Mopub initialization success" forKey:@"message"];
+                                                        [getConnectAdDetailsResponse setObject:admobResponse forKey:@"Admob"];
+                                                        [getConnectAdDetailsResponse setObject:mopubResponse forKey:@"Mopub"];
+                                                        completion(getConnectAdDetailsResponse, nil);                                   }
+                                                }
+                                                if (initializationStatus == false) {
+                                                    [admobResponse setObject:[NSNumber numberWithBool:false] forKey:@"success"];
+                                                    [admobResponse setValue:@"Admob initialization failed" forKey:@"message"];
                                                     [mopubResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
                                                     [mopubResponse setValue:@"Mopub initialization success" forKey:@"message"];
                                                     [getConnectAdDetailsResponse setObject:admobResponse forKey:@"Admob"];
                                                     [getConnectAdDetailsResponse setObject:mopubResponse forKey:@"Mopub"];
-                                                    completion(getConnectAdDetailsResponse, nil);                                   }
-                                            }
-                                            if (initializationStatus == false) {
-                                                [admobResponse setObject:[NSNumber numberWithBool:false] forKey:@"success"];
-                                                [admobResponse setValue:@"Admob initialization failed" forKey:@"message"];
-                                                [mopubResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
-                                                [mopubResponse setValue:@"Mopub initialization success" forKey:@"message"];
-                                                [getConnectAdDetailsResponse setObject:admobResponse forKey:@"Admob"];
-                                                [getConnectAdDetailsResponse setObject:mopubResponse forKey:@"Mopub"];
-                                                completion(getConnectAdDetailsResponse, nil);
-                                            }
-                                        }];
+                                                    completion(getConnectAdDetailsResponse, nil);
+                                                }
+                                            }];
+                                        });
                                     } else {
                                         [admobResponse setObject:[NSNumber numberWithBool:false] forKey:@"success"];
                                         [admobResponse setValue:@"Admob Data not found" forKey:@"message"];
@@ -286,26 +288,28 @@ BOOL initializationStatus;
                                 adMobAppUnitId = appUnitId;
                             }
                             if (![adMobAppUnitId isEqualToString:@""]) {
-                                [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
-                                    for (int i = 0; i<status.adapterStatusesByClassName.allValues.count; i++) {
-                                        GADAdapterStatus *gadAdapterStatus = [status.adapterStatusesByClassName.allValues objectAtIndex:i];
-                                        if(gadAdapterStatus.state == GADAdapterInitializationStateReady){
-                                            NSLog(@"ADMOB initialization success!");
-                                            initializationStatus = true;
-                                            [admobResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
-                                            [admobResponse setValue:@"Admob initialization success" forKey:@"message"];
-                                            [mopubResponse setObject:[NSNumber numberWithBool:false] forKey:@"success"];
-                                            [mopubResponse setValue:@"Mopub initialization failed" forKey:@"message"];
-                                            [getConnectAdDetailsResponse setObject:admobResponse forKey:@"Admob"];
-                                            [getConnectAdDetailsResponse setObject:mopubResponse forKey:@"Mopub"];
-                                            completion(getConnectAdDetailsResponse, nil);
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
+                                        for (int i = 0; i<status.adapterStatusesByClassName.allValues.count; i++) {
+                                            GADAdapterStatus *gadAdapterStatus = [status.adapterStatusesByClassName.allValues objectAtIndex:i];
+                                            if(gadAdapterStatus.state == GADAdapterInitializationStateReady){
+                                                NSLog(@"ADMOB initialization success!");
+                                                initializationStatus = true;
+                                                [admobResponse setObject:[NSNumber numberWithBool:true] forKey:@"success"];
+                                                [admobResponse setValue:@"Admob initialization success" forKey:@"message"];
+                                                [mopubResponse setObject:[NSNumber numberWithBool:false] forKey:@"success"];
+                                                [mopubResponse setValue:@"Mopub initialization failed" forKey:@"message"];
+                                                [getConnectAdDetailsResponse setObject:admobResponse forKey:@"Admob"];
+                                                [getConnectAdDetailsResponse setObject:mopubResponse forKey:@"Mopub"];
+                                                completion(getConnectAdDetailsResponse, nil);
+                                            }
                                         }
-                                    }
-                                    if (initializationStatus == false) {
-                                        NSError *error = [NSError errorWithDomain:@"ConnectAd" code:3457 userInfo:@{NSLocalizedDescriptionKey:@"Admob initialization failed & Mopub data not found"}];
-                                        completion(nil, error);
-                                    }
-                                }];
+                                        if (initializationStatus == false) {
+                                            NSError *error = [NSError errorWithDomain:@"ConnectAd" code:3457 userInfo:@{NSLocalizedDescriptionKey:@"Admob initialization failed & Mopub data not found"}];
+                                            completion(nil, error);
+                                        }
+                                    }];
+                                });
                             } else {
                                 NSError *error = [NSError errorWithDomain:@"ConnectAd" code:3457 userInfo:@{NSLocalizedDescriptionKey:@"Admob & Mopub data not found"}];
                                 completion(nil, error);
