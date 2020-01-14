@@ -51,7 +51,9 @@
 -(void)loadNewAds {
     if(![self.rewardedOrders firstObject]) {
         NSLog(@"No reward found");
-        [self.delegate onRewardNotFound];
+        if (self.delegate != nil &&  [(NSObject*)self.delegate respondsToSelector:@selector(onRewardNotFound)]) {
+            [self.delegate onRewardNotFound];
+        }
     } else {
         NSInteger rewardedOrder = [self.rewardedOrders.firstObject integerValue];
         switch (rewardedOrder) {
