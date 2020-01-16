@@ -36,6 +36,7 @@ typedef enum: int {
 -(void)onBannerExpanded:(AdType)adType;
 -(void)onBannerCollapsed:(AdType)adType;
 -(void)onBannerClicked:(AdType)adType;
+-(void)onBannerNoAdAvailable;
 
  @end
 
@@ -47,7 +48,7 @@ typedef enum: int {
 -(void)onRewardVideoStarted:(AdType)adType;
 -(void)onRewardedVideoCompleted:(AdType)adType withReward:(AdReward*_Nullable) rewardItem;
 -(void)onRewardVideoClicked:(AdType)adType;
--(void)onRewardNotFound;
+-(void)onRewardNoAdAvailable;
 
 @end
 
@@ -58,6 +59,7 @@ typedef enum: int {
 -(void)onInterstitialClosed:(AdType)adType;
 -(void)onInterstitialDone:(AdType)adType;
 -(void)onInterstitialFailed:(AdType)adType withError:(NSError*_Nullable)error;
+-(void)onInterstitialNoAdAvailable;
 
 @end
 

@@ -118,7 +118,7 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
         }
         if (ad.connectedAdUnit != nil) {
             if ([ad.connectedAdUnit.banner count] != 0) {
-                self.connectAdBanners = ad.connectedAdUnit.banner;
+                self.connectAdBanners = [[NSMutableArray alloc] initWithArray:ad.connectedAdUnit.banner copyItems:YES];;
 
             }
         }
@@ -130,6 +130,9 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
 -(void)loadNewAds {
     if(![self.bannerOrders firstObject]) {
         NSLog(@"No banner found");
+        if (self.delegate != nil &&  [(NSObject*)self.delegate respondsToSelector:@selector(onBannerNoAdAvailable)]) {
+            [self.delegate onBannerNoAdAvailable];
+        }
     } else {
         NSInteger bannerOrder = [self.bannerOrders.firstObject integerValue];
         switch (bannerOrder) {
@@ -198,7 +201,8 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
     NSString *bannerAdUnitUrl = @"";
     if([self.connectAdBanners count] != 0){
         bannerAdUnitUrl = self.connectAdBanners.firstObject;
-        NSURL *url = [[NSURL alloc]initWithString:bannerAdUnitUrl];
+//        NSURL *url = [[NSURL alloc]initWithString:bannerAdUnitUrl];
+        NSURL *url = [[NSURL alloc]initWithString:@""];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
@@ -216,22 +220,43 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
                     } else {
                         NSError *htlmlError = [NSError errorWithDomain:@"ConnctedAd" code:201 userInfo:@{NSLocalizedDescriptionKey:@"html data not found"}];
                         [self.delegate onBannerFailed:self.adType withError:htlmlError];
+                        [self checkExistingConnectedAds];
 
                     }
 
                 } else {
                     [self.delegate onBannerFailed:self.adType withError:parseError];
-
+                    [self checkExistingConnectedAds];
                 }
             } else {
                 NSLog(@"Error");
                 [self.delegate onBannerFailed:self.adType withError:error];
-
+                [self checkExistingConnectedAds];
             }
         }];
         [dataTask resume];
     }
 }
+
+-(void)checkExistingConnectedAds {
+    if([self.connectAdBanners count] != 0) {
+        [self.connectAdBanners removeObjectAtIndex:0];
+        if ([self.connectAdBanners count] !=  0) {
+            [self setConnectAd];
+        } else {
+            if ([self.bannerOrders count] != 0) {
+                [self.bannerOrders removeObjectAtIndex:0];
+                [self loadNewAds];
+            }
+        }
+    } else {
+        if ([self.bannerOrders count] != 0) {
+            [self.bannerOrders removeObjectAtIndex:0];
+            [self loadNewAds];
+        }
+    }
+}
+
 -(void)showConnectBanner:(NSString *)htmlString {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *replacedHtmlString = [htmlString stringByReplacingOccurrencesOfString:@"'//" withString:@"'https://"];

@@ -43,15 +43,17 @@
             }
         }
         if (ad.connectedAdUnit != nil && [ad.connectedAdUnit.interstitial count] != 0) {
-            self.ConnectAdInterstitials = ad.connectedAdUnit.interstitial;
+            self.ConnectAdInterstitials = [[NSMutableArray alloc] initWithArray:ad.connectedAdUnit.interstitial copyItems:YES];
         }
     }
     [self loadNewAds];
-
 }
 -(void)loadNewAds{
     if(![self.interstitialOrders firstObject]) {
         NSLog(@"No Interstitial found");
+        if (self.delegate != nil &&  [(NSObject*)self.delegate respondsToSelector:@selector(onInterstitialNoAdAvailable)]) {
+            [self.delegate onInterstitialNoAdAvailable];
+        }
     } else {
         NSInteger interstitialOrder = [self.interstitialOrders.firstObject integerValue];
         switch (interstitialOrder) {
@@ -109,7 +111,8 @@
     NSString *interstitialAdUnitUrl = @"";
     if([self.ConnectAdInterstitials count] != 0){
         interstitialAdUnitUrl = self.ConnectAdInterstitials.firstObject;
-        NSURL *url = [[NSURL alloc]initWithString:interstitialAdUnitUrl];
+        //NSURL *url = [[NSURL alloc]initWithString:interstitialAdUnitUrl];
+        NSURL *url = [[NSURL alloc]initWithString:@""];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
@@ -127,16 +130,38 @@
                     } else {
                         NSError *htlmlError = [NSError errorWithDomain:@"ConnctedAd" code:201 userInfo:@{NSLocalizedDescriptionKey:@"html data not found"}];
                         [self.delegate onInterstitialFailed:self.adType withError:htlmlError];
+                        [self checkExistingConnectedAds];
                     }
 
                 } else {
                     [self.delegate onInterstitialFailed:self.adType withError:parseError];
+                    [self checkExistingConnectedAds];
                 }
             } else {
                 [self.delegate onInterstitialFailed:self.adType withError:error];
+                [self checkExistingConnectedAds];
             }
         }];
         [dataTask resume];
+    }
+}
+
+-(void)checkExistingConnectedAds {
+    if([self.ConnectAdInterstitials count] != 0) {
+        [self.ConnectAdInterstitials removeObjectAtIndex:0];
+        if ([self.ConnectAdInterstitials count] !=  0) {
+            [self setConnectAd];
+        } else {
+            if ([self.interstitialOrders count] != 0) {
+                [self.interstitialOrders removeObjectAtIndex:0];
+                [self loadNewAds];
+            }
+        }
+    } else {
+        if ([self.interstitialOrders count] != 0) {
+            [self.interstitialOrders removeObjectAtIndex:0];
+            [self loadNewAds];
+        }
     }
 }
 
