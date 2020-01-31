@@ -5,6 +5,9 @@
 @implementation ConnectAdRewarded
 @synthesize moPubConnectId,adMobConnectId,rootViewController;
 
+bool videoStarted;
+bool videoFailed;
+NSError* playbackErrorCode;
 
 -(id)init:(NSMutableArray*)adMobIDs :(NSMutableArray*)moPubIDs {
     if ([adMobIDs count] != 0) {
@@ -49,6 +52,9 @@
     [self loadNewAds];
 }
 -(void)loadNewAds {
+    videoFailed = false;
+    videoStarted = false;
+    playbackErrorCode = false;
     if(![self.rewardedOrders firstObject]) {
         NSLog(@"No reward found");
         if (self.delegate != nil &&  [(NSObject*)self.delegate respondsToSelector:@selector(onRewardNoAdAvailable)]) {
@@ -166,27 +172,22 @@
 }
 
 - (void)rewardedVideoAdDidFailToLoadForAdUnitID:(NSString *)adUnitID error:(NSError *)error{
-    // Called when a video fails to load for the given adUnitId. The provided error code will provide more insight into the reason for the failure to load.
-    [self.delegate onRewardFail:self.adType withError:error];
-    if ([self.moPubConnectIds count] != 0) {
-        [self.moPubConnectIds removeObjectAtIndex:0];
-        if ([self.moPubConnectIds count] != 0) {
-            [self setMoPubRewarded];
-        } else {
-            if ([self.rewardedOrders count] != 0) {
-                [self.rewardedOrders removeObjectAtIndex:0];
-                [self loadNewAds];
-            }
-        }
-    } else {
-        if ([self.rewardedOrders count] != 0) {
-            [self.rewardedOrders removeObjectAtIndex:0];
-            [self loadNewAds];
-        }
-    }
+    [self handleMoPubFailure:error];
 }
 
 - (void)rewardedVideoAdDidFailToPlayForAdUnitID:(NSString *)adUnitID error:(NSError *)error {
+    [self handleMoPubFailure:error];
+}
+
+- (void) handleMoPubFailure:(NSError*) error {
+    videoFailed = true;
+    playbackErrorCode = error;
+    if (!videoStarted) {
+        [self onFail:error];
+    }
+}
+
+- (void)onFail:(NSError*) error {
     //  Called when there is an error during video playback.
     [self.delegate onRewardFail:self.adType withError:error];
     if ([self.moPubConnectIds count] != 0) {
@@ -209,13 +210,19 @@
 
 - (void)rewardedVideoAdWillAppearForAdUnitID:(NSString *)adUnitID{
     // Called when a rewarded video starts playing.
+    videoStarted = true;
     [self.delegate onRewardVideoStarted:self.adType];
 }
 
 
 - (void)rewardedVideoAdDidDisappearForAdUnitID:(NSString *)adUnitID{
     // Called when a rewarded video is closed. At this point your application should resume.
-    [self.delegate onRewardVideoClosed:self.adType];
+    
+    if (videoStarted && videoFailed) {
+        [self onFail:playbackErrorCode];
+    } else {
+        [self.delegate onRewardVideoClosed:self.adType];
+    }
 }
 
 - (void)rewardedVideoAdShouldRewardForAdUnitID:(NSString *)adUnitID reward:(MPRewardedVideoReward *)reward{
