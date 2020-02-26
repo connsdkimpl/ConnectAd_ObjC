@@ -204,7 +204,10 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
 //        NSURL *url = [[NSURL alloc]initWithString:bannerAdUnitUrl];
         NSURL *url = [[NSURL alloc]initWithString:@""];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
-        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        sessionConfiguration.timeoutIntervalForRequest = 10;
+        sessionConfiguration.timeoutIntervalForResource = 10;
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:nil delegateQueue:nil];
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
                                           {
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
