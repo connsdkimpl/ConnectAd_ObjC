@@ -197,7 +197,7 @@ BOOL initializationStatus;
                     }
                     if (![mopubAppUnitId isEqualToString:@""]) {
                         MPMoPubConfiguration *sdkConfig = [[MPMoPubConfiguration alloc] initWithAdUnitIdForAppInitialization:mopubAppUnitId];
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
                             [[MoPub sharedInstance] initializeSdkWithConfiguration:sdkConfig completion:^{
                                 NSLog(@"SDK initialization complete");
                                 //admob initialisation
