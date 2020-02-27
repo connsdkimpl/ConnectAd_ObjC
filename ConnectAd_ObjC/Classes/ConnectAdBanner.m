@@ -131,7 +131,10 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
     if(![self.bannerOrders firstObject]) {
         NSLog(@"No banner found");
         if (self.delegate != nil &&  [(NSObject*)self.delegate respondsToSelector:@selector(onBannerNoAdAvailable)]) {
-            [self.delegate onBannerNoAdAvailable];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate onBannerNoAdAvailable]; 
+            });
         }
     } else {
         NSInteger bannerOrder = [self.bannerOrders.firstObject integerValue];
@@ -201,8 +204,8 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
     NSString *bannerAdUnitUrl = @"";
     if([self.connectAdBanners count] != 0){
         bannerAdUnitUrl = self.connectAdBanners.firstObject;
-//        NSURL *url = [[NSURL alloc]initWithString:bannerAdUnitUrl];
-        NSURL *url = [[NSURL alloc]initWithString:@""];
+        NSURL *url = [[NSURL alloc]initWithString:bannerAdUnitUrl];
+        // NSURL *url = [[NSURL alloc]initWithString:@""];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
         sessionConfiguration.timeoutIntervalForRequest = 10;
@@ -222,18 +225,27 @@ static BOOL IsOperatingSystemAtLeastVersion(NSInteger majorVersion) {
                         [self showConnectBanner:htmlString];
                     } else {
                         NSError *htlmlError = [NSError errorWithDomain:@"ConnctedAd" code:201 userInfo:@{NSLocalizedDescriptionKey:@"html data not found"}];
-                        [self.delegate onBannerFailed:self.adType withError:htlmlError];
+
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self.delegate onBannerFailed:self.adType withError:htlmlError];
+                        });
+
                         [self checkExistingConnectedAds];
 
                     }
 
                 } else {
-                    [self.delegate onBannerFailed:self.adType withError:parseError];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.delegate onBannerFailed:self.adType withError:parseError];
+                    });
+
                     [self checkExistingConnectedAds];
                 }
             } else {
-                NSLog(@"Error");
-                [self.delegate onBannerFailed:self.adType withError:error];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.delegate onBannerFailed:self.adType withError:error];    
+                });
+
                 [self checkExistingConnectedAds];
             }
         }];
